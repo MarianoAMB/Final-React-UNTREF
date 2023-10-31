@@ -73,7 +73,7 @@ export default function Formulario() {
           ...
         </option>
         {datosPropiedad.map((propiedad) => (
-          <option key={propiedad.id} value={propiedad.tipo}>
+          <option key={propiedad.id} value={propiedad.factor}>
             {propiedad.tipo}
           </option>
         ))}
@@ -87,7 +87,7 @@ export default function Formulario() {
           ...
         </option>
         {datosUbicacion.map((ubicacion) => (
-          <option key={ubicacion.id} value={ubicacion.tipo}>
+          <option key={ubicacion.id} value={ubicacion.factor}>
             {ubicacion.tipo}
           </option>
         ))}

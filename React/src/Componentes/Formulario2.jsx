@@ -7,9 +7,6 @@ export default function Formulario() {
     ubicacionSeleccionada: "",
     metrosCuadrados: 20,
     precioEstimado: 0,
-    costoM2: 35.86,
-    factorProp: "",
-    factorUbi: "",
   });
   const [datosPropiedad, setDatosPropiedad] = useState([]);
   const [datosUbicacion, setDatosUbicacion] = useState([]);
@@ -32,10 +29,28 @@ export default function Formulario() {
   }, []);
 
   const cotizador = () => {
-    const precioEstimado =
-      formData.costoM2 * formData.factorProp * formData.factorUbi * formData.metrosCuadrados;
+    const { propiedadSeleccionada, ubicacionSeleccionada, metrosCuadrados } =
+      formData;
 
-    setFormData({ ...formData, precioEstimado });
+    const propiedadSeleccionadaData = datosPropiedad.find(
+      (propiedad) => propiedad.tipo === propiedadSeleccionada
+    );
+
+    const ubicacionSeleccionadaData = datosUbicacion.find(
+      (ubicacion) => ubicacion.tipo === ubicacionSeleccionada
+    );
+
+    if (propiedadSeleccionadaData && ubicacionSeleccionadaData) {
+      const costoM2 = 35.86;
+      const factorPropiedad = propiedadSeleccionadaData.factor;
+      const factorUbicacion = ubicacionSeleccionadaData.factor;
+      const precioEstimado =
+        costoM2 * factorPropiedad * factorUbicacion * metrosCuadrados;
+
+      setFormData({ ...formData, precioEstimado });
+    } else {
+      alert("Por favor selecciona una propiedad y una ubicación");
+    }
   };
 
   const guardarEnHistorial = () => {
@@ -53,54 +68,33 @@ export default function Formulario() {
     localStorage.setItem("cotizaciones", JSON.stringify(cotizacionesGuardadas));
   };
 
-  const handleSelectPropiedad = (e) => {
-    const selectedOption = e.target.options[e.target.selectedIndex];
-
-    setFormData({
-      ...formData,
-      propiedadSeleccionada: selectedOption.textContent,
-      factorProp: selectedOption.value,
-    });
-  };
-
-  const handleSelectUbicacion = (e) => {
-    const selectedOption = e.target.options[e.target.selectedIndex];
-
-    setFormData({
-      ...formData,
-      ubicacionSeleccionada: selectedOption.textContent,
-      factorUbi: selectedOption.value,
-    });
-  };
-
   return (
     <div className="center div-cotizador">
       <h2 className="center separador">Completa los datos solicitados</h2>
       <label htmlFor="propiedad">Selecciona el tipo de propiedad</label>
       <select
-        id="propiedad"
-        onChange={handleSelectPropiedad}
+        value={formData.propiedadSeleccionada}
+        onChange={(e) => setFormData({ ...formData, propiedadSeleccionada: e.target.value })}
       >
-        <option selected disabled>
+        <option value="" disabled>
           ...
         </option>
         {datosPropiedad.map((propiedad) => (
-          <option key={propiedad.tipo} value={propiedad.factor}>
+          <option key={propiedad.id} value={propiedad.tipo}>
             {propiedad.tipo}
           </option>
         ))}
       </select>
-
       <label htmlFor="ubicacion">Selecciona su ubicación</label>
       <select
-        id="ubicacion"
-        onChange={handleSelectUbicacion}
+        value={formData.ubicacionSeleccionada}
+        onChange={(e) => setFormData({ ...formData, ubicacionSeleccionada: e.target.value })}
       >
-        <option selected disabled>
+        <option value="" disabled>
           ...
         </option>
         {datosUbicacion.map((ubicacion) => (
-          <option key={ubicacion.tipo} value={ubicacion.factor}>
+          <option key={ubicacion.id} value={ubicacion.tipo}>
             {ubicacion.tipo}
           </option>
         ))}
@@ -109,12 +103,7 @@ export default function Formulario() {
       <input
         type="number"
         value={formData.metrosCuadrados}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            metrosCuadrados: parseFloat(e.target.value) || 0,
-          })
-        }
+        onChange={(e) => setFormData({ ...formData, metrosCuadrados: parseFloat(e.target.value) || 0 })}
         min="20"
         max="500"
         required

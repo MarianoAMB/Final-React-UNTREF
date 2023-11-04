@@ -1,12 +1,14 @@
 .historial-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  grid-auto-flow: dense;
   grid-gap: 10px;
 }
 
 .historial-item {
   display: contents;
+  align-items: center;
+  justify-content: center;
+  text-align: center
 }
 
 .historial-header {

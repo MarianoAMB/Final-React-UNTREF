@@ -1,0 +1,15 @@
+.historial-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-flow: dense;
+  grid-gap: 10px;
+}
+
+.historial-item {
+  display: contents;
+}
+
+.historial-header {
+  background-color: #ccc;
+  padding: 5px;
+}

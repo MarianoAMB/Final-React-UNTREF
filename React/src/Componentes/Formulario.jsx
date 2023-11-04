@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function Formulario() {
+  const [formData, setFormData] = useState({
+    propiedadSeleccionada: "",
+    ubicacionSeleccionada: "",
+    metrosCuadrados: 20,
+    precioEstimado: 0,
+  });
   const [datosPropiedad, setDatosPropiedad] = useState([]);
   const [datosUbicacion, setDatosUbicacion] = useState([]);
-  const [propiedadSeleccionada, setPropiedadSeleccionada] = useState("");
-  const [ubicacionSeleccionada, setUbicacionSeleccionada] = useState("");
-  const [metrosCuadrados, setMetrosCuadrados] = useState(20);
-  const [precioEstimado, setPrecioEstimado] = useState(0);
 
   useEffect(() => {
     axios("https://653831aaa543859d1bb14d53.mockapi.io/propiedades")
@@ -27,6 +29,9 @@ export default function Formulario() {
   }, []);
 
   const cotizador = () => {
+    const { propiedadSeleccionada, ubicacionSeleccionada, metrosCuadrados } =
+      formData;
+
     const propiedadSeleccionadaData = datosPropiedad.find(
       (propiedad) => propiedad.tipo === propiedadSeleccionada
     );
@@ -39,23 +44,25 @@ export default function Formulario() {
       const costoM2 = 35.86;
       const factorPropiedad = propiedadSeleccionadaData.factor;
       const factorUbicacion = ubicacionSeleccionadaData.factor;
-      const precioEstimado = costoM2 * factorPropiedad * factorUbicacion * metrosCuadrados;
+      const precioEstimado =
+        costoM2 * factorPropiedad * factorUbicacion * metrosCuadrados;
 
-      setPrecioEstimado(precioEstimado);
+      setFormData({ ...formData, precioEstimado });
+    } else {
+      alert("Por favor selecciona una propiedad y una ubicación");
     }
   };
 
   const guardarEnHistorial = () => {
-
     const cotizacionesGuardadas =
       JSON.parse(localStorage.getItem("cotizaciones")) || [];
 
     cotizacionesGuardadas.push({
       fecha: new Date().toLocaleString(),
-      propiedad: propiedadSeleccionada,
-      ubicacion: ubicacionSeleccionada,
-      metrosCuadrados,
-      precio: precioEstimado,
+      propiedad: formData.propiedadSeleccionada,
+      ubicacion: formData.ubicacionSeleccionada,
+      metrosCuadrados: formData.metrosCuadrados,
+      precio: formData.precioEstimado,
     });
 
     localStorage.setItem("cotizaciones", JSON.stringify(cotizacionesGuardadas));
@@ -66,28 +73,28 @@ export default function Formulario() {
       <h2 className="center separador">Completa los datos solicitados</h2>
       <label htmlFor="propiedad">Selecciona el tipo de propiedad</label>
       <select
-        value={propiedadSeleccionada}
-        onChange={(e) => setPropiedadSeleccionada(e.target.value)}
+        value={formData.propiedadSeleccionada}
+        onChange={(e) => setFormData({ ...formData, propiedadSeleccionada: e.target.value })}
       >
         <option value="" disabled>
           ...
         </option>
         {datosPropiedad.map((propiedad) => (
-          <option key={propiedad.id} value={propiedad.factor}>
+          <option key={propiedad.id} value={propiedad.tipo}>
             {propiedad.tipo}
           </option>
         ))}
       </select>
       <label htmlFor="ubicacion">Selecciona su ubicación</label>
       <select
-        value={ubicacionSeleccionada}
-        onChange={(e) => setUbicacionSeleccionada(e.target.value)}
+        value={formData.ubicacionSeleccionada}
+        onChange={(e) => setFormData({ ...formData, ubicacionSeleccionada: e.target.value })}
       >
         <option value="" disabled>
           ...
         </option>
         {datosUbicacion.map((ubicacion) => (
-          <option key={ubicacion.id} value={ubicacion.factor}>
+          <option key={ubicacion.id} value={ubicacion.tipo}>
             {ubicacion.tipo}
           </option>
         ))}
@@ -95,8 +102,8 @@ export default function Formulario() {
       <label htmlFor="metros2">Ingresa los Metros cuadrados:</label>
       <input
         type="number"
-        value={metrosCuadrados}
-        onChange={(e) => setMetrosCuadrados(parseFloat(e.target.value))}
+        value={formData.metrosCuadrados}
+        onChange={(e) => setFormData({ ...formData, metrosCuadrados: parseFloat(e.target.value) || 0 })}
         min="20"
         max="500"
         required
@@ -108,7 +115,7 @@ export default function Formulario() {
       </div>
       <div className="center separador">
         <p className="importe">
-          Precio estimado: $ {precioEstimado.toFixed(2)}{" "}
+          Precio estimado: $ {formData.precioEstimado.toFixed(2)}{" "}
         </p>
         <button
           className="guardar ocultar"

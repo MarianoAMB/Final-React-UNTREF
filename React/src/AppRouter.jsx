@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
-import Historial from "./Historial";
+import Historial from "./Componentes/Historial";
 import { routes } from "./Routes";
 import Error from "./Componentes/Error";
 

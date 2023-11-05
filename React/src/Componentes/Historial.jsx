@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./Historial.module.css"; 
 
 export default function Historial() {
   const [cotizaciones, setCotizaciones] = useState([]);
@@ -21,17 +20,19 @@ export default function Historial() {
   const navigate = useNavigate();
 
   return (
+    <div>
+    <h2 className = "semi">Historial de cotizaciones</h2>
     <div className="center div-cotizador">
-      <div className={styles["historial-grid"]}>
-        <div className={styles["historial-header"]}>Fecha</div>
-        <div className={styles["historial-header"]}>Propiedad</div>
-        <div className={styles["historial-header"]}>Ubicación</div>
-        <div className={styles["historial-header"]}>Metros</div>
-        <div className={styles["historial-header"]}>Precio</div>
+      <div className="historial-grid">
+        <div className="historial-grid">Fecha</div>
+        <div className="historial-grid">Propiedad</div>
+        <div className="historial-grid">Ubicación</div>
+        <div className="historial-grid">Metros</div>
+        <div className="historial-grid">Precio</div>
         <div></div>
 
         {cotizaciones.map((cotizacion, index) => (
-            <div key={index} className={styles["historial-item"]}>
+          <div key={index} className="historial-item">
             <div>{cotizacion.fecha}</div>
             <div>{cotizacion.propiedad}</div>
             <div>{cotizacion.ubicacion}</div>
@@ -42,8 +43,9 @@ export default function Historial() {
         ))}
       </div>
       <div className="center separador">
-        <button className="button button-outline" onClick={() => navigate(-1)}>VOLVER</button>
+        <button className="button2" onClick={() => navigate(-1)}>VOLVER</button>
       </div>
+    </div>
     </div>
   );
 }

@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import { routes } from "../Routes";
+import Swal from "sweetalert2";
 
 export default function Formulario() {
   const [formData, setFormData] = useState({
@@ -31,26 +34,40 @@ export default function Formulario() {
       });
   }, []);
 
-  const cotizador = () => {
-    const precioEstimado =
-      formData.costoM2 * formData.factorProp * formData.factorUbi * formData.metrosCuadrados;
+  const cotizarYGuardar = () => {
+    if (
+      formData.propiedadSeleccionada &&
+      formData.ubicacionSeleccionada &&
+      formData.metrosCuadrados >= 20 &&
+      formData.metrosCuadrados <= 500
+    ) {
+      const precioEstimado =
+        formData.costoM2 *
+        formData.factorProp *
+        formData.factorUbi *
+        formData.metrosCuadrados;
 
-    setFormData({ ...formData, precioEstimado });
-  };
+      setFormData({ ...formData, precioEstimado });
 
-  const guardarEnHistorial = () => {
-    const cotizacionesGuardadas =
-      JSON.parse(localStorage.getItem("cotizaciones")) || [];
+      const cotizacionesGuardadas =
+        JSON.parse(localStorage.getItem("cotizaciones")) || [];
 
-    cotizacionesGuardadas.push({
-      fecha: new Date().toLocaleString(),
-      propiedad: formData.propiedadSeleccionada,
-      ubicacion: formData.ubicacionSeleccionada,
-      metrosCuadrados: formData.metrosCuadrados,
-      precio: formData.precioEstimado,
-    });
+      cotizacionesGuardadas.push({
+        fecha: new Date().toLocaleString(),
+        propiedad: formData.propiedadSeleccionada,
+        ubicacion: formData.ubicacionSeleccionada,
+        metrosCuadrados: formData.metrosCuadrados,
+        precio: Number(precioEstimado), // Convertir a número
+      });
 
-    localStorage.setItem("cotizaciones", JSON.stringify(cotizacionesGuardadas));
+      localStorage.setItem("cotizaciones", JSON.stringify(cotizacionesGuardadas));
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'No capo',
+        text: 'Crack, ¿no te das cuenta que te faltan cosas o el número de metros cuadrados no está en el rango permitido (20-500)?',
+      });
+    }
   };
 
   const handleSelectPropiedad = (e) => {
@@ -77,10 +94,7 @@ export default function Formulario() {
     <div className="center div-cotizador">
       <h2 className="center separador">Completa los datos solicitados</h2>
       <label htmlFor="propiedad">Selecciona el tipo de propiedad</label>
-      <select
-        id="propiedad"
-        onChange={handleSelectPropiedad}
-      >
+      <select id="propiedad" className="Option" onChange={handleSelectPropiedad}>
         <option selected disabled>
           ...
         </option>
@@ -92,10 +106,7 @@ export default function Formulario() {
       </select>
 
       <label htmlFor="ubicacion">Selecciona su ubicación</label>
-      <select
-        id="ubicacion"
-        onChange={handleSelectUbicacion}
-      >
+      <select id="ubicacion" className="Option" onChange={handleSelectUbicacion}>
         <option selected disabled>
           ...
         </option>
@@ -107,34 +118,33 @@ export default function Formulario() {
       </select>
       <label htmlFor="metros2">Ingresa los Metros cuadrados:</label>
       <input
+        className="Option"
         type="number"
         value={formData.metrosCuadrados}
-        onChange={(e) =>
+        onChange={(e) => {
           setFormData({
             ...formData,
             metrosCuadrados: parseFloat(e.target.value) || 0,
-          })
-        }
+          });
+        }}
         min="20"
         max="500"
         required
       />
-      <div className="center separador">
-        <button className="button button-outline" onClick={cotizador}>
-          Cotizar
+
+      <div className="center separador botonera">
+        <button className="button button-outline" onClick={cotizarYGuardar}>
+          Cotizar y Guardar
         </button>
+        <Link to={routes.historial}>
+          <button className="button button-outline">Historial</button>
+        </Link>
       </div>
+
       <div className="center separador">
         <p className="importe">
           Precio estimado: $ {formData.precioEstimado.toFixed(2)}{" "}
         </p>
-        <button
-          className="guardar ocultar"
-          title="Guardar en historial"
-          onClick={guardarEnHistorial}
-        >
-          💾 Guardar cotización
-        </button>
       </div>
     </div>
   );

@@ -6,6 +6,13 @@
   font-family: "Roboto", Arial, Helvetica, sans-serif;
 }
 
+.NotFound{
+  background-color: black;
+  padding: 20px;
+  border-radius: 0.8rem;
+  opacity: 0.8;
+}
+
 body {
   margin: 0;
   display: flex;
